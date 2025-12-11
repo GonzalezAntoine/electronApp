@@ -46,18 +46,12 @@ app.whenReady().then(() => {
   ipcMain.on('ping', () => console.log('pong'))
 
   // 🔥 OUVERTURE DE TA BASE SQLITE ICI
-  db = new sqlite3.Database(
-    join(app.getPath('userData'), 'kanjiQuizz.db'), // emplacement conseillé
-    (err) => {
-      if (err) console.error('Erreur BD:', err)
-      else console.log('SQLite ouvert !')
-    }
-  )
+  db = new sqlite3.Database(join(__dirname, '../../kanjiQuizz.db'))
 
   // 🔥 API : envoyer les données vers le frontend (React)
   ipcMain.handle('get-data', () => {
     return new Promise((resolve, reject) => {
-      db.all('SELECT * FROM vocabulaire', [], (err, rows) => {
+      db.all('SELECT * FROM Vocabulaire', [], (err, rows) => {
         if (err) reject(err)
         else resolve(rows)
       })

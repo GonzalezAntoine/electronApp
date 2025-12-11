@@ -1,230 +1,124 @@
-/* Style général */
-@import url('https://fonts.googleapis.com/css2?family=Sawarabi+Mincho&display=swap');
-
+html,
 body {
-  font-family: 'Sawarabi Mincho', serif;
-  background-color: #f8f9fa;
-  color: #2C3E50;
-  margin: 0;
-  padding: 20px;
-  display: flex;
-  justify-content: center;
-}
-
-.container {
-  max-width: 600px;
-  width: 100%;
-  background: white;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-/* Onglets */
-.tabs {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 15px;
-}
-
-.tabs button {
-  background-color: #FADADD;
-  border: none;
-  border-radius: 12px;
-  padding: 10px 20px;
-  margin: 0 5px;
-  font-weight: bold;
-  font-family: 'Sawarabi Mincho', serif;
-  cursor: pointer;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  transition: all 0.3s ease;
-}
-
-.tabs button.active {
-  transition: all 0.3s ease;
-  background-color: #FADADD;
-}
-
-.tabs button:hover {
-  background-color: #FFD1DC;
-  transform: scale(1.05);
-}
-
-/* Filtrage */
-.filter {
-  text-align: center;
-  margin-bottom: 10px;
-}
-
-.filter label {
-  margin-right: 10px;
-  font-weight: bold;
-}
-
-.filter select {
-  padding: 5px;
-}
-
-/* Liste */
-.kanji-list {
-  list-style: none;
-  padding: 0;
-}
-
-.kanji-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px;
-  margin: 5px 0;
-  background: #e9ecef;
-  border-radius: 5px;
-  transition: transform 0.3s ease;
-}
-
-.kanji-item:hover {
-  transform: translateY(-3px);
-  background-color: #FADADD;
-}
-
-/* Quiz */
-.quiz-container {
-  background: #fffaf5;
-  border: 2px solid #f2e3d5;
-  border-radius: 25px;
-  padding: 2rem;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-  max-width: 600px;
-  margin: 2rem auto;
   font-family: 'Segoe UI', sans-serif;
+  background: #fdf6f0;
+  color: #333;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
 }
 
-.quiz-container h3 {
-  font-size: 1.8rem;
-  color: #2d2d2d;
-  margin-bottom: 1.2rem;
-  text-align: center;
+.app-container {
+  padding: 20px;
+  font-family: 'Segoe UI', sans-serif;
+  max-width: 900px;
+  margin: auto;
+  overflow-y: auto;
 }
 
-.quiz-options {
+header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+header h1 {
+  margin: 0;
+  color: #ff6f61;
+}
+
+nav button {
+  margin: 0 5px;
+  padding: 8px 16px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  background: #ffe3d8;
+  transition: 0.3s;
+}
+
+nav button.active,
+nav button:hover {
+  background: #ff6f61;
+  color: white;
+}
+
+.filter {
+  margin: 15px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cards-container {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-  margin-top: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 15px;
+}
+
+.card {
+  background: #fff8f0;
+  padding: 12px;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  transition: 0.3s;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+}
+
+.kanji {
+  font-size: 28px;
+  color: #ff6f61;
+}
+
+.furigana {
+  font-size: 14px;
+  color: #555;
+}
+
+.traduction {
+  margin-top: 8px;
+  font-weight: bold;
+  color: #333;
+}
+
+.quiz-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+.quiz-card {
+  background: #fff8f0;
+  border-radius: 12px;
+  padding: 15px;
+  margin: 20px auto;
+  max-width: 500px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .quiz-options button {
-  background-color: #f4f9ff;
-  border: 2px solid #9bc8f5;
-  border-radius: 20px;
-  padding: 0.8rem 1rem;
-  font-size: 1rem;
-  font-weight: bold;
+  margin: 5px;
+  padding: 10px 15px;
+  border-radius: 12px;
+  border: none;
   cursor: pointer;
-  transition: all 0.2s ease-in-out;
-  color: #1a1a1a;
+  background: #ffe3d8;
+  transition: 0.3s;
 }
 
 .quiz-options button:hover {
-  background-color: #d6ecff;
-  transform: scale(1.05);
+  background: #ff6f61;
+  color: white;
 }
-
 .quiz-message {
-  font-size: 1.2rem;
-  margin-top: 1rem;
-  text-align: center;
-}
-
-.quiz-message:empty {
-  display: none;
-}
-
-.progress-container {
-  height: 15px;
-  width: 100%;
-  background-color: #e0e0e0;
-  border-radius: 20px;
-  margin: 1rem 0;
-  overflow: hidden;
-}
-
-.progress-bar {
-  height: 100%;
-  transition: width 0.4s ease;
-  border-radius: 20px;
-}
-
-.score-text {
+  font-size: 1.1em;
   font-weight: bold;
-  font-size: 1rem;
-  text-align: center;
-  margin-bottom: 1rem;
-  color: #444;
-}
-
-
-button {
-  transition: all 0.3s ease;
-}
-
-button:hover {
-  transform: scale(1.05);
-  background-color: #FADADD; /* rose sakura */
-}
-
-.sound-button {
-  margin-left: 8px;
-  padding: 6px 10px;
-  font-size: 18px;
-  background-color: #ffe082;
-  border: none;
-  border-radius: 50%;
-  cursor: pointer;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-  transition: background-color 0.3s, transform 0.2s;
-}
-
-.sound-button:hover {
-  background-color: #ffecb3;
-  transform: scale(1.1);
-}
-
-.sound-button:active {
-  background-color: #ffd54f;
-  transform: scale(0.95);
-}
-
-.kitsune-mascotte {
-  width: 120px;
-  margin: 10px auto;
-  display: block;
-  animation: float 3s ease-in-out infinite;
-}
-
-.kitsune-message {
-  text-align: center;
-  font-size: 1.2em;
-  color: #ff7f50;
-  font-weight: bold;
-  margin-bottom: 20px;
-}
-
-@keyframes float {
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
-  100% { transform: translateY(0px); }
-}
-
-.speak-button {
-  background: none;
-  border: none;
-  font-size: 20px;
-  cursor: pointer;
-  margin-left: 10px;
-  transition: transform 0.2s ease;
-}
-
-.speak-button:hover {
-  transform: scale(1.2);
+  color: #333;
 }
