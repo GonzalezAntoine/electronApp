@@ -122,3 +122,28 @@ nav button:hover {
   font-weight: bold;
   color: #333;
 }
+.sound-button {
+  background-color: #fdd835;
+  border: none;
+  border-radius: 50%;
+  width: 35px;
+  height: 35px;
+  cursor: pointer;
+  font-size: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    background-color 0.2s,
+    transform 0.2s;
+  margin-left: 8px;
+}
+
+.sound-button:hover {
+  background-color: #ffc107;
+  transform: scale(1.1);
+}
+
+.sound-button:active {
+  transform: scale(0.95);
+}

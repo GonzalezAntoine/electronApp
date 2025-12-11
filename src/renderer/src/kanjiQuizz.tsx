@@ -153,10 +153,18 @@ const KanjiQuiz: React.FC<QuizProps> = ({ data, lessons, selectedLesson, setSele
 
   const speakJapanese = (text: string) => {
     const utterance = new SpeechSynthesisUtterance(text)
-    const voices = window.speechSynthesis.getVoices()
-    const japaneseVoice = voices.find((v) => v.lang === 'ja-JP')
-    if (japaneseVoice) utterance.voice = japaneseVoice
-    speechSynthesis.speak(utterance)
+    const speak = () => {
+      const voices = window.speechSynthesis.getVoices()
+      const japaneseVoice = voices.find((v) => v.lang === 'ja-JP')
+      if (japaneseVoice) utterance.voice = japaneseVoice
+      speechSynthesis.speak(utterance)
+    }
+
+    if (window.speechSynthesis.getVoices().length === 0) {
+      window.speechSynthesis.onvoiceschanged = speak
+    } else {
+      speak()
+    }
   }
 
   const generateQuestion = (questions = remainingQuestions) => {
@@ -218,6 +226,14 @@ const KanjiQuiz: React.FC<QuizProps> = ({ data, lessons, selectedLesson, setSele
         <p>
           Quelle est la traduction de :{' '}
           <strong>{currentQuestion.kanji || currentQuestion.furigana}</strong> ?
+          <button
+            onClick={() => speakJapanese(currentQuestion.kanji || currentQuestion.furigana)}
+            className="sound-button"
+            title="Écouter la prononciation"
+            style={{ marginLeft: '10px' }}
+          >
+            🔊
+          </button>
         </p>
         <div className="quiz-options">
           {options.map((o, idx) => (
