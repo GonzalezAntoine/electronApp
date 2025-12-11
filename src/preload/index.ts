@@ -1,16 +1,24 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 
-// 🔥 ON AJOUTE ICI LES MÉTHODES PERSONNALISÉES
+// 🔥 MÉTHODES EXISTANTES
 const api = {
   getData: () => ipcRenderer.invoke('get-data')
 }
 
-// Si l’isolation est active (normalement oui)
+// 🔥 NOUVELLES MÉTHODES POUR LA TOP BAR
+const windowControls = {
+  minimize: () => ipcRenderer.send('window-minimize'),
+  maximize: () => ipcRenderer.send('window-maximize'),
+  close: () => ipcRenderer.send('window-close')
+}
+
+// Exposition dans le renderer
 if (process.contextIsolated) {
   try {
     contextBridge.exposeInMainWorld('electron', electronAPI)
     contextBridge.exposeInMainWorld('api', api)
+    contextBridge.exposeInMainWorld('windowControls', windowControls)
   } catch (error) {
     console.error(error)
   }
@@ -20,4 +28,6 @@ if (process.contextIsolated) {
   window.electron = electronAPI
   // @ts-ignore
   window.api = api
+  // @ts-ignore
+  window.windowControls = windowControls
 }

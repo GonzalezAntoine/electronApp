@@ -3,6 +3,7 @@ import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import sqlite3 from 'sqlite3'
 import icon from '../../resources/icon.png?asset'
+const ipc = ipcMain
 
 let db: sqlite3.Database
 
@@ -11,6 +12,7 @@ function createWindow(): void {
     width: 900,
     height: 670,
     show: false,
+    frame: false,
     autoHideMenuBar: true,
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
@@ -19,6 +21,13 @@ function createWindow(): void {
       contextIsolation: true
     }
   })
+
+  ipcMain.on('window-minimize', () => mainWindow.minimize())
+  ipcMain.on('window-maximize', () => {
+    if (mainWindow.isMaximized()) mainWindow.unmaximize()
+    else mainWindow.maximize()
+  })
+  ipcMain.on('window-close', () => mainWindow.close())
 
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()

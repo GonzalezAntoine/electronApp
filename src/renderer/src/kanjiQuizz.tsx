@@ -12,92 +12,66 @@ interface DataRow {
 
 declare global {
   interface Window {
-    api: {
-      getData: () => Promise<DataRow[]>
-    }
+    api: { getData: () => Promise<DataRow[]> }
+    windowControls: { minimize: () => void; maximize: () => void; close: () => void }
   }
 }
 
 const useLoadData = () => {
   const [data, setData] = useState<DataRow[]>([])
   useEffect(() => {
-    window.api.getData().then((rows: DataRow[]) => setData(rows))
+    window.api.getData().then(setData)
   }, [])
   return data
 }
 
-const KanjiApp: React.FC = () => {
-  const data: DataRow[] = useLoadData()
-  const [activeTab, setActiveTab] = useState('vocabulaire')
-  const [selectedLesson, setSelectedLesson] = useState('Toutes')
-
-  useEffect(() => {
-    if (data.length > 0) setSelectedLesson('Toutes')
-  }, [data])
-
-  const lessons = ['Toutes', ...new Set(data.map((row) => row.leçon))]
-  const filteredData =
-    selectedLesson === 'Toutes' ? data : data.filter((row) => row.leçon === selectedLesson)
-  const kanjiData = filteredData.filter((row) => row.kanji && row.kanji.trim() !== '')
-
-  return (
-    <div className="app-container">
-      <header>
-        <h1>🦊 Apprentissage Japonais</h1>
-        <nav>
-          <button
-            className={activeTab === 'vocabulaire' ? 'active' : ''}
-            onClick={() => setActiveTab('vocabulaire')}
-          >
-            Vocabulaire ({data.length})
-          </button>
-          <button
-            className={activeTab === 'kanji' ? 'active' : ''}
-            onClick={() => setActiveTab('kanji')}
-          >
-            Kanji ({kanjiData.length})
-          </button>
-          <button
-            className={activeTab === 'quiz' ? 'active' : ''}
-            onClick={() => setActiveTab('quiz')}
-          >
-            Quiz
-          </button>
-        </nav>
-      </header>
-
-      {(activeTab === 'vocabulaire' || activeTab === 'kanji') && (
-        <div className="filter">
-          <label>Filtrer par leçon :</label>
-          <select value={selectedLesson} onChange={(e) => setSelectedLesson(e.target.value)}>
-            {lessons.map((lesson, idx) => (
-              <option key={idx} value={lesson}>
-                {lesson}
-              </option>
-            ))}
-          </select>
-        </div>
-      )}
-
-      {activeTab === 'vocabulaire' && <CardList data={filteredData} />}
-      {activeTab === 'kanji' && <CardList data={kanjiData} />}
-      {activeTab === 'quiz' && (
-        <KanjiQuiz
-          data={filteredData}
-          lessons={lessons}
-          selectedLesson={selectedLesson}
-          setSelectedLesson={setSelectedLesson}
-        />
-      )}
+const TopBar = () => (
+  <div className="top-bar">
+    <span className="title">🦊 Minna no nihongo quizz</span>
+    <div className="window-controls">
+      <button onClick={() => window.windowControls.minimize()}>_</button>
+      <button onClick={() => window.windowControls.maximize()}>□</button>
+      <button onClick={() => window.windowControls.close()}>×</button>
     </div>
-  )
-}
+  </div>
+)
 
-interface CardListProps {
-  data: DataRow[]
-}
+const NavigationTabs = ({ active, setActive, dataLength, kanjiLength }) => (
+  <nav>
+    {[
+      { id: 'vocabulaire', label: `Vocabulaire (${dataLength})` },
+      { id: 'kanji', label: `Kanji (${kanjiLength})` },
+      { id: 'quiz', label: 'Quiz' }
+    ].map((tab) => (
+      <button
+        key={tab.id}
+        className={active === tab.id ? 'active' : ''}
+        onClick={() => setActive(tab.id)}
+      >
+        {tab.label}
+      </button>
+    ))}
+  </nav>
+)
 
-const CardList: React.FC<CardListProps> = ({ data }) => (
+const LessonFilter = ({ lessons, selected, setSelected }) => (
+  <div className="filter">
+    <label>Leçon :</label>
+    <select
+      className="styled-select"
+      value={selected}
+      onChange={(e) => setSelected(e.target.value)}
+    >
+      {lessons.map((l, idx) => (
+        <option key={idx} value={l}>
+          {l}
+        </option>
+      ))}
+    </select>
+  </div>
+)
+
+const CardList = ({ data }: { data: DataRow[] }) => (
   <div className="cards-container">
     {data.map((row, idx) => (
       <div key={idx} className="card">
@@ -109,144 +83,145 @@ const CardList: React.FC<CardListProps> = ({ data }) => (
   </div>
 )
 
-interface QuizProps {
-  data: DataRow[]
-  lessons: string[]
-  selectedLesson: string
-  setSelectedLesson: (value: string) => void
-}
-
-const KanjiQuiz: React.FC<QuizProps> = ({ data, lessons, selectedLesson, setSelectedLesson }) => {
-  const [currentQuestion, setCurrentQuestion] = useState<DataRow | null>(null)
+const useQuizLogic = (data: DataRow[]) => {
+  const [current, setCurrent] = useState<DataRow | null>(null)
   const [options, setOptions] = useState<DataRow[]>([])
   const [message, setMessage] = useState('')
-  const [correctAnswers, setCorrectAnswers] = useState(0)
-  const [totalQuestions, setTotalQuestions] = useState(0)
-  const [remainingQuestions, setRemainingQuestions] = useState<DataRow[]>([])
-  const [quizFinished, setQuizFinished] = useState(false)
+  const [correct, setCorrect] = useState(0)
+  const [remaining, setRemaining] = useState<DataRow[]>([])
+  const [finished, setFinished] = useState(false)
 
-  const startQuiz = () => {
-    setRemainingQuestions([...data])
-    setCorrectAnswers(0)
-    setQuizFinished(false)
-    generateQuestion([...data])
-  }
+  // Fonction utilitaire DRY : tirer au hasard
+  const pickRandom = (arr: any[]) => arr[Math.floor(Math.random() * arr.length)]
 
-  useEffect(() => {
-    if (data.length > 0) {
-      setTotalQuestions(data.length)
-      setRemainingQuestions([...data])
-      const firstQuestionIndex = Math.floor(Math.random() * data.length)
-      const firstQuestion = data[firstQuestionIndex]
-      setCurrentQuestion(firstQuestion)
-      setOptions(
-        [
-          ...data
-            .filter((i) => i.Traduction !== firstQuestion.Traduction)
-            .sort(() => 0.5 - Math.random())
-            .slice(0, 3),
-          firstQuestion
-        ].sort(() => 0.5 - Math.random())
-      )
-    }
-  }, [data])
-
-  const speakJapanese = (text: string) => {
+  // Voix japonaise DRY
+  const speak = (text: string) => {
     const utterance = new SpeechSynthesisUtterance(text)
-    const speak = () => {
-      const voices = window.speechSynthesis.getVoices()
-      const japaneseVoice = voices.find((v) => v.lang === 'ja-JP')
-      if (japaneseVoice) utterance.voice = japaneseVoice
+    const play = () => {
+      const voice = speechSynthesis.getVoices().find((v) => v.lang === 'ja-JP')
+      if (voice) utterance.voice = voice
       speechSynthesis.speak(utterance)
     }
-
-    if (window.speechSynthesis.getVoices().length === 0) {
-      window.speechSynthesis.onvoiceschanged = speak
-    } else {
-      speak()
-    }
+    speechSynthesis.getVoices().length ? play() : (speechSynthesis.onvoiceschanged = play)
   }
 
-  const generateQuestion = (questions = remainingQuestions) => {
-    if (questions.length === 0) {
-      setQuizFinished(true)
-      setCurrentQuestion(null)
+  const generateQuestion = (list = remaining) => {
+    if (list.length === 0) {
+      setFinished(true)
+      setCurrent(null)
       setMessage('🎉 Quiz terminé !')
       return
     }
 
-    const idx = Math.floor(Math.random() * questions.length)
-    const question = questions[idx]
+    const question = pickRandom(list)
     const wrong = data
       .filter((i) => i.Traduction !== question.Traduction)
       .sort(() => 0.5 - Math.random())
       .slice(0, 3)
 
-    setCurrentQuestion(question)
+    setRemaining(list.filter((q) => q !== question))
+    setCurrent(question)
     setOptions([...wrong, question].sort(() => 0.5 - Math.random()))
-    setRemainingQuestions((prev) => prev.filter((_, i) => i !== idx))
-
-    // Réinitialiser le message pour la nouvelle question
     setMessage('')
-
-    speakJapanese(question.kanji || question.furigana)
+    speak(question.kanji || question.furigana)
   }
 
-  const checkAnswer = (answer: string) => {
-    if (!currentQuestion) return
-
-    if (answer === currentQuestion.Traduction) {
-      setMessage('✅ Correct !')
-      setCorrectAnswers((prev) => prev + 1)
-    } else {
-      setMessage('❌ Mauvaise réponse.')
-    }
-
-    // Passer à la question suivante après un délai
+  const check = (answer: string) => {
+    if (!current) return
+    const good = answer === current.Traduction
+    setMessage(good ? '✅ Correct !' : '❌ Mauvaise réponse.')
+    if (good) setCorrect((c) => c + 1)
     setTimeout(() => generateQuestion(), 1000)
   }
 
-  if (!currentQuestion) return <p>Chargement...</p>
+  const start = () => {
+    setCorrect(0)
+    setFinished(false)
+    setRemaining([...data])
+    generateQuestion([...data])
+  }
+
+  return { current, options, message, finished, correct, start, check }
+}
+
+const KanjiQuiz = ({ data, lessons, selectedLesson, setSelectedLesson }) => {
+  const { current, options, message, correct, finished, start, check } = useQuizLogic(data)
+
+  useEffect(() => {
+    if (data.length > 0) start()
+  }, [data])
+
+  if (!current) return <p>Chargement...</p>
 
   return (
     <div className="quiz-container">
       <h2>Quiz Kanji 🦊</h2>
-      <div className="filter">
-        <label>Leçon :</label>
-        <select value={selectedLesson} onChange={(e) => setSelectedLesson(e.target.value)}>
-          {lessons.map((l, idx) => (
-            <option key={idx} value={l}>
-              {l}
-            </option>
-          ))}
-        </select>
-      </div>
+
+      <LessonFilter lessons={lessons} selected={selectedLesson} setSelected={setSelectedLesson} />
+
       <Lottie animationData={kitsuneAnimation} loop style={{ width: 150 }} />
+
       <div className="quiz-card">
         <p>
-          Quelle est la traduction de :{' '}
-          <strong>{currentQuestion.kanji || currentQuestion.furigana}</strong> ?
-          <button
-            onClick={() => speakJapanese(currentQuestion.kanji || currentQuestion.furigana)}
-            className="sound-button"
-            title="Écouter la prononciation"
-            style={{ marginLeft: '10px' }}
-          >
-            🔊
-          </button>
+          Quelle est la traduction de : <strong>{current.kanji || current.furigana}</strong> ?
         </p>
+
         <div className="quiz-options">
           {options.map((o, idx) => (
-            <button key={idx} onClick={() => checkAnswer(o.Traduction)}>
+            <button key={idx} onClick={() => check(o.Traduction)}>
               {o.Traduction}
             </button>
           ))}
         </div>
       </div>
+
       <p className="quiz-message">{message}</p>
       <p>
-        Score : {correctAnswers}/{totalQuestions}
+        Score : {correct}/{data.length}
       </p>
+    </div>
+  )
+}
+
+const KanjiApp = () => {
+  const data = useLoadData()
+  const [activeTab, setActiveTab] = useState('vocabulaire')
+  const [selectedLesson, setSelectedLesson] = useState('Toutes')
+
+  const lessons = ['Toutes', ...new Set(data.map((d) => d.leçon))]
+  const filtered =
+    selectedLesson === 'Toutes' ? data : data.filter((d) => d.leçon === selectedLesson)
+  const kanjiOnly = filtered.filter((d) => d.kanji?.trim())
+
+  return (
+    <div className="app-container">
+      <TopBar />
+
+      <header>
+        <h1>🦊 Apprentissage Japonais</h1>
+
+        <NavigationTabs
+          active={activeTab}
+          setActive={setActiveTab}
+          dataLength={data.length}
+          kanjiLength={kanjiOnly.length}
+        />
+      </header>
+
+      {(activeTab === 'vocabulaire' || activeTab === 'kanji') && (
+        <LessonFilter lessons={lessons} selected={selectedLesson} setSelected={setSelectedLesson} />
+      )}
+
+      {activeTab === 'vocabulaire' && <CardList data={filtered} />}
+      {activeTab === 'kanji' && <CardList data={kanjiOnly} />}
+      {activeTab === 'quiz' && (
+        <KanjiQuiz
+          data={filtered}
+          lessons={lessons}
+          selectedLesson={selectedLesson}
+          setSelectedLesson={setSelectedLesson}
+        />
+      )}
     </div>
   )
 }

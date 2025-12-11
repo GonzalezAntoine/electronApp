@@ -1,3 +1,6 @@
+/* -----------------------------------
+   GLOBAL
+----------------------------------- */
 html,
 body {
   font-family: 'Segoe UI', sans-serif;
@@ -5,37 +8,104 @@ body {
   color: #333;
   margin: 0;
   padding: 0;
-  overflow-y: auto;
+  overflow: hidden; /* géré par l'app-container */
 }
 
 .app-container {
-  padding: 20px;
-  font-family: 'Segoe UI', sans-serif;
-  max-width: 900px;
-  margin: auto;
+  height: 100vh;
+  width: 100vw;
   overflow-y: auto;
+  padding-top: 45px; /* espace sous la top-bar */
+  box-sizing: border-box;
 }
 
+/* -----------------------------------
+   TOP BAR (CUSTOM TITLEBAR)
+----------------------------------- */
+.top-bar {
+  height: 35px;
+  background-color: #1e1e2f;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 12px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 10;
+  -webkit-app-region: drag;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+.top-bar .title {
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.window-controls {
+  display: flex;
+  gap: 8px;
+  -webkit-app-region: no-drag;
+}
+
+.window-controls button {
+  width: 28px;
+  height: 28px;
+  background: transparent;
+  border: none;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.window-controls button:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* -----------------------------------
+   HEADER
+----------------------------------- */
 header {
   display: flex;
-  flex-direction: column;
+  justify-content: space-between; /* titre à gauche, boutons à droite */
   align-items: center;
+  padding: 10px 20px;
+  width: 100%;
+  box-sizing: border-box;
+  flex-wrap: wrap; /* indispensable pour permettre le retour à la ligne */
   gap: 10px;
 }
 
 header h1 {
   margin: 0;
+  font-size: 32px;
+  font-weight: bold;
   color: #ff6f61;
 }
 
+/* -----------------------------------
+   NAVIGATION
+----------------------------------- */
+nav {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
 nav button {
-  margin: 0 5px;
-  padding: 8px 16px;
-  border-radius: 12px;
+  padding: 8px 18px;
   border: none;
-  cursor: pointer;
   background: #ffe3d8;
-  transition: 0.3s;
+  border-radius: 16px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.25s;
 }
 
 nav button.active,
@@ -44,84 +114,104 @@ nav button:hover {
   color: white;
 }
 
+/* -----------------------------------
+   FILTER
+----------------------------------- */
 .filter {
   margin: 15px 0;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 10px;
 }
 
+/* -----------------------------------
+   CARDS
+----------------------------------- */
 .cards-container {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 15px;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 18px;
+  padding: 10px;
 }
 
 .card {
   background: #fff8f0;
-  padding: 12px;
-  border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 18px 12px;
+  border-radius: 14px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
   text-align: center;
-  transition: 0.3s;
+  transition: 0.25s;
 }
 
 .card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.15);
 }
 
 .kanji {
-  font-size: 28px;
+  font-size: 34px;
   color: #ff6f61;
+  font-weight: bold;
 }
 
 .furigana {
   font-size: 14px;
-  color: #555;
+  color: #888;
+  margin-bottom: 6px;
 }
 
 .traduction {
-  margin-top: 8px;
   font-weight: bold;
-  color: #333;
+  font-size: 16px;
+  color: #444;
 }
 
+/* -----------------------------------
+   QUIZ SECTION
+----------------------------------- */
 .quiz-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 15px;
+  gap: 18px;
+  padding: 10px;
 }
 
 .quiz-card {
   background: #fff8f0;
   border-radius: 12px;
-  padding: 15px;
-  margin: 20px auto;
-  max-width: 500px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  max-width: 520px;
+  width: 100%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  text-align: center;
 }
 
 .quiz-options button {
-  margin: 5px;
+  margin: 6px;
   padding: 10px 15px;
   border-radius: 12px;
   border: none;
   cursor: pointer;
   background: #ffe3d8;
-  transition: 0.3s;
+  transition: 0.25s;
+  font-weight: 600;
 }
 
 .quiz-options button:hover {
   background: #ff6f61;
   color: white;
+  transform: translateY(-2px);
 }
+
 .quiz-message {
   font-size: 1.1em;
   font-weight: bold;
-  color: #333;
 }
+
+/* -----------------------------------
+   SOUND BUTTON
+----------------------------------- */
 .sound-button {
   background-color: #fdd835;
   border: none;
@@ -133,10 +223,7 @@ nav button:hover {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition:
-    background-color 0.2s,
-    transform 0.2s;
-  margin-left: 8px;
+  transition: 0.2s;
 }
 
 .sound-button:hover {
@@ -146,4 +233,50 @@ nav button:hover {
 
 .sound-button:active {
   transform: scale(0.95);
+}
+
+/* -----------------------------------
+   STYLED SELECT
+----------------------------------- */
+.filter label {
+  font-weight: bold;
+  color: #444;
+}
+
+.styled-select {
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 2px solid #ffb8a4;
+  background: #fff5ef;
+  color: #333;
+  cursor: pointer;
+  transition: 0.3s;
+  font-size: 14px;
+}
+
+.styled-select:hover {
+  border-color: #ff6f61;
+  background: #ffe3d8;
+}
+
+.styled-select:focus {
+  outline: none;
+  border-color: #ff6f61;
+  background: #ffe3d8;
+  box-shadow: 0 0 5px rgba(255, 111, 97, 0.5);
+}
+
+@media (max-width: 800px) {
+  header {
+    flex-direction: column; /* h1 + nav en colonne */
+    text-align: center;
+  }
+
+  nav {
+    justify-content: center; /* aligne les boutons au centre */
+  }
+
+  header h1 {
+    font-size: 1.5em;
+  }
 }
