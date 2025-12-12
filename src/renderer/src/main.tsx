@@ -2,10 +2,10 @@ import './assets/main.css'
 
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import KanjiQuizz from './kanjiQuizz'
+import KanjiApp from './KanjiApp'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <KanjiQuizz />
+    <KanjiApp />
   </StrictMode>
 )
