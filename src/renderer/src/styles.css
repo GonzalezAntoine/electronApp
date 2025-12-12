@@ -212,7 +212,7 @@ nav button:hover {
 /* -----------------------------------
    SOUND BUTTON
 ----------------------------------- */
-.sound-button {
+.sound-btn {
   background-color: #fdd835;
   border: none;
   border-radius: 50%;
@@ -226,12 +226,12 @@ nav button:hover {
   transition: 0.2s;
 }
 
-.sound-button:hover {
+.sound-btn:hover {
   background-color: #ffc107;
   transform: scale(1.1);
 }
 
-.sound-button:active {
+.sound-btn:active {
   transform: scale(0.95);
 }
 

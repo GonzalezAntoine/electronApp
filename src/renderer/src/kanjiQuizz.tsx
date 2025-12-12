@@ -163,7 +163,19 @@ const KanjiQuiz = ({ data, lessons, selectedLesson, setSelectedLesson }) => {
 
       <div className="quiz-card">
         <p>
-          Quelle est la traduction de : <strong>{current.kanji || current.furigana}</strong> ?
+          Quelle est la traduction de : <strong>{current.kanji || current.furigana} </strong> ?
+          <button
+            className="sound-btn"
+            onClick={() => {
+              const text = current.kanji || current.furigana
+              const utterance = new SpeechSynthesisUtterance(text)
+              const voice = speechSynthesis.getVoices().find((v) => v.lang === 'ja-JP')
+              if (voice) utterance.voice = voice
+              speechSynthesis.speak(utterance)
+            }}
+          >
+            🔊
+          </button>
         </p>
 
         <div className="quiz-options">
