@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
+import { DataRow } from '@renderer/types/db'
 
 const useLoadData = () => {
-  const [data, setData] = useState([])
+  const [data, setData] = useState<DataRow[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -11,7 +12,7 @@ const useLoadData = () => {
         setLoading(true)
         setError(null)
 
-        const result = await window.api.getData()
+        const result = await (window.api as any).getData()
         setData(result)
       } catch (err) {
         console.error(err)

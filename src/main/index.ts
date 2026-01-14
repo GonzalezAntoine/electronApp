@@ -3,7 +3,8 @@ import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import sqlite3 from 'sqlite3'
 import icon from '../../resources/icon.png?asset'
-const ipc = ipcMain
+import fs from 'fs'
+import path from 'path'
 
 let db: sqlite3.Database
 
@@ -56,7 +57,8 @@ app.whenReady().then(() => {
   ipcMain.on('ping', () => console.log('pong'))
 
   // 🔥 OUVERTURE DE TA BASE SQLITE ICI
-  db = new sqlite3.Database(join(__dirname, '../../kanjiQuizz.db'))
+  console.log('Database path:', getDatabasePath())
+  db = new sqlite3.Database(getDatabasePath())
 
   // 🔥 API : envoyer les données vers le frontend (React)
   ipcMain.handle('get-data', () => {
@@ -80,3 +82,15 @@ app.on('window-all-closed', () => {
     app.quit()
   }
 })
+
+function getDatabasePath(): string {
+  const userDataPath = app.getPath('userData')
+  const dbPath = path.join(userDataPath, 'kanjiQuizz.db')
+
+  if (!fs.existsSync(dbPath)) {
+    const bundledDb = path.join(process.resourcesPath, 'kanjiQuizz.db')
+    fs.copyFileSync(bundledDb, dbPath)
+  }
+
+  return dbPath
+}

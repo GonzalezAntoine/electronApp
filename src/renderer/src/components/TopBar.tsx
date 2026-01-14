@@ -1,3 +1,13 @@
+declare global {
+  interface Window {
+    windowControls: {
+      minimize: () => void
+      maximize: () => void
+      close: () => void
+    }
+  }
+}
+
 const TopBar = () => (
   <div className="top-bar">
     <span className="title">🦊 Minna no nihongo quizz</span>
