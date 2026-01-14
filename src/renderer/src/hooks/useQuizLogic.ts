@@ -1,18 +1,19 @@
 import { useState } from 'react'
 import { UseSpeech } from './UseSpeech'
+import { DataRow } from '@renderer/types/db'
 
-const useQuizLogic = (data) => {
-  const [current, setCurrent] = useState(null)
-  const [options, setOptions] = useState([])
+const useQuizLogic = (data: DataRow[]) => {
+  const [current, setCurrent] = useState<DataRow | null>(null)
+  const [options, setOptions] = useState<DataRow[]>([])
+  const [remaining, setRemaining] = useState<DataRow[]>([])
   const [message, setMessage] = useState('')
   const [correct, setCorrect] = useState(0)
-  const [remaining, setRemaining] = useState([])
   const [finished, setFinished] = useState(false)
   const { speak } = UseSpeech()
 
-  const pickRandom = (arr) => arr[Math.floor(Math.random() * arr.length)]
+  const pickRandom = <T>(arr: T[]): T => arr[Math.floor(Math.random() * arr.length)]
 
-  const generateQuestion = (list = remaining) => {
+  const generateQuestion = (list: DataRow[] = remaining): void => {
     if (list.length === 0) {
       setFinished(true)
       setCurrent(null)
@@ -33,7 +34,7 @@ const useQuizLogic = (data) => {
     speak(question.kanji || question.furigana)
   }
 
-  const check = (answer) => {
+  const check = (answer: string): void => {
     if (!current) return
     const good = answer === current.Traduction
     setMessage(good ? '✅ Correct !' : '❌ Mauvaise réponse.')
@@ -41,7 +42,7 @@ const useQuizLogic = (data) => {
     setTimeout(() => generateQuestion(), 1000)
   }
 
-  const start = () => {
+  const start = (): void => {
     setCorrect(0)
     setFinished(false)
     setRemaining([...data])

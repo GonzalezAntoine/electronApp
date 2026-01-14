@@ -1,4 +1,10 @@
-const LessonFilter = ({ lessons, selected, setSelected }) => (
+type LessonFilterProps = {
+  lessons: string[]
+  selected: string
+  setSelected: (value: string) => void
+}
+
+const LessonFilter: React.FC<LessonFilterProps> = ({ lessons, selected, setSelected }) => (
   <div className="filter">
     <label>Leçon :</label>
     <select
