@@ -1,11 +1,13 @@
 import Lottie from 'lottie-react'
-import LessonFilter from './LessionFilter'
-import useQuizLogic from '../hooks/useQuizLogic'
+import LessonFilter from './LessonFilter'
+import useQuizLogic from '../hooks/UseQuizLogic'
 import kitsuneAnimation from '../kitsune.json'
 import { useEffect } from 'react'
+import { UseSpeech } from '@renderer/hooks/UseSpeech'
 
 const KanjiQuiz = ({ data, lessons, selectedLesson, setSelectedLesson }) => {
   const { current, options, message, correct, start, check } = useQuizLogic(data)
+  const { speak } = UseSpeech()
 
   useEffect(() => {
     if (data.length > 0) start()
@@ -24,15 +26,7 @@ const KanjiQuiz = ({ data, lessons, selectedLesson, setSelectedLesson }) => {
       <div className="quiz-card">
         <p>
           Quelle est la traduction de : <strong>{current.kanji || current.furigana}</strong> ?
-          <button
-            className="sound-btn"
-            onClick={() => {
-              const utter = new SpeechSynthesisUtterance(current.kanji || current.furigana)
-              const voice = speechSynthesis.getVoices().find((v) => v.lang === 'ja-JP')
-              if (voice) utter.voice = voice
-              speechSynthesis.speak(utter)
-            }}
-          >
+          <button className="sound-btn" onClick={() => speak(current.kanji || current.furigana)}>
             🔊
           </button>
         </p>

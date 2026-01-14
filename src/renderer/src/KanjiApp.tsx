@@ -1,14 +1,14 @@
 import useLoadData from './hooks/useLoadData'
 import TopBar from './components/TopBar'
 import NavigationTabs from './components/NavigationTabs'
-import LessonFilter from './components/LessionFilter'
+import LessonFilter from './components/LessonFilter'
 import CardList from './components/CardList'
-import KanjiQuiz from './components/kanjiQuizz'
+import KanjiQuiz from './components/KanjiQuizz'
 import './assets/main.css'
 import { useState } from 'react'
 
 const KanjiApp = () => {
-  const data = useLoadData()
+  const { data, loading, error } = useLoadData()
   const [activeTab, setActiveTab] = useState('vocabulaire')
   const [selectedLesson, setSelectedLesson] = useState('Toutes')
 
@@ -16,6 +16,22 @@ const KanjiApp = () => {
   const filtered =
     selectedLesson === 'Toutes' ? data : data.filter((d) => d.leçon === selectedLesson)
   const kanjiOnly = filtered.filter((d) => d.kanji?.trim())
+
+  if (loading) {
+    return (
+      <div className="center">
+        <p>⏳ Chargement des données...</p>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="center error">
+        <p>❌ {error}</p>
+      </div>
+    )
+  }
 
   return (
     <div className="app-container">

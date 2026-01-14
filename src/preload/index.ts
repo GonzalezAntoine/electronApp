@@ -1,5 +1,4 @@
 import { contextBridge, ipcRenderer } from 'electron'
-import { electronAPI } from '@electron-toolkit/preload'
 
 // 🔥 MÉTHODES EXISTANTES
 const api = {
@@ -16,7 +15,6 @@ const windowControls = {
 // Exposition dans le renderer
 if (process.contextIsolated) {
   try {
-    contextBridge.exposeInMainWorld('electron', electronAPI)
     contextBridge.exposeInMainWorld('api', api)
     contextBridge.exposeInMainWorld('windowControls', windowControls)
   } catch (error) {
@@ -24,8 +22,6 @@ if (process.contextIsolated) {
   }
 } else {
   // fallback
-  // @ts-ignore
-  window.electron = electronAPI
   // @ts-ignore
   window.api = api
   // @ts-ignore

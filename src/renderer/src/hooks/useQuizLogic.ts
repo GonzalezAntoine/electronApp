@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { UseSpeech } from './UseSpeech'
 
 const useQuizLogic = (data) => {
   const [current, setCurrent] = useState(null)
@@ -7,18 +8,9 @@ const useQuizLogic = (data) => {
   const [correct, setCorrect] = useState(0)
   const [remaining, setRemaining] = useState([])
   const [finished, setFinished] = useState(false)
+  const { speak } = UseSpeech()
 
   const pickRandom = (arr) => arr[Math.floor(Math.random() * arr.length)]
-
-  const speak = (text) => {
-    const utterance = new SpeechSynthesisUtterance(text)
-    const play = () => {
-      const voice = speechSynthesis.getVoices().find((v) => v.lang === 'ja-JP')
-      if (voice) utterance.voice = voice
-      speechSynthesis.speak(utterance)
-    }
-    speechSynthesis.getVoices().length ? play() : (speechSynthesis.onvoiceschanged = play)
-  }
 
   const generateQuestion = (list = remaining) => {
     if (list.length === 0) {
