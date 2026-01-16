@@ -94,7 +94,6 @@ CREATE TABLE Vocabulaire (
 Exemples :
 
 - `getData()` → récupération du vocabulaire
-- `getMinnaExercises(lesson)` → récupération des exercices
 - `windowControls.minimize()`
 - `windowControls.maximize()`
 - `windowControls.close()`
